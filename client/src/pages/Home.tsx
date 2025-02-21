@@ -13,7 +13,7 @@ function App() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        "${import.meta.env.VITE_API_BASE_URL}/auth/restoran"
+        "https://qrmenu-server.vercel.app//auth/restoran"
       );
 
       setRest(categoriesRes.data);

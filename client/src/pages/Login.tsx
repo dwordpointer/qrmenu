@@ -29,7 +29,7 @@ const Login = () => {
     setError(null);
 
     try {
-        const response = await axios.post("${import.meta.env.VITE_API_BASE_URL}/auth/login", formData);
+        const response = await axios.post("https://qrmenu-server.vercel.app//auth/login", formData);
         
         if (response.data.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);

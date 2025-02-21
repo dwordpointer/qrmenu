@@ -36,10 +36,10 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const [categoriesRes, productsRes] = await Promise.all([
-        axios.get<Category[]>("${import.meta.env.VITE_API_BASE_URL}/admin/category", {
+        axios.get<Category[]>("https://qrmenu-server.vercel.app//admin/category", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get<Product[]>("${import.meta.env.VITE_API_BASE_URL}/admin/product", {
+        axios.get<Product[]>("https://qrmenu-server.vercel.app//admin/product", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -69,7 +69,7 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "${import.meta.env.VITE_API_BASE_URL}/admin/addProduct",
+        "https://qrmenu-server.vercel.app//admin/addProduct",
         newProduct,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -87,7 +87,7 @@ export default function CategoryProduct() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/admin/product/${id}`, {
+      await axios.delete(`https://qrmenu-server.vercel.app//admin/product/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

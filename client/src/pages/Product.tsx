@@ -15,7 +15,7 @@ function Product() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/product/${prodid}`
+        `https://qrmenu-server.vercel.app//auth/product/${prodid}`
       );
 
       setRest(categoriesRes.data);

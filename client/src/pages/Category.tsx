@@ -16,7 +16,7 @@ function Category() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/category/${catid}`
+        `https://qrmenu-server.vercel.app//auth/category/${catid}`
       );
 
       setRest(categoriesRes.data);
