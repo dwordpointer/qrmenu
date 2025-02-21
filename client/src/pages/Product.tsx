@@ -15,7 +15,7 @@ function Product() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        `http://localhost:5500/auth/product/${prodid}`
+        `${import.meta.env.VITE_API_BASE_URL}/auth/product/${prodid}`
       );
 
       setRest(categoriesRes.data);

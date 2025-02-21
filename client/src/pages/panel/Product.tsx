@@ -36,10 +36,10 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const [categoriesRes, productsRes] = await Promise.all([
-        axios.get<Category[]>("http://localhost:5500/admin/category", {
+        axios.get<Category[]>("${import.meta.env.VITE_API_BASE_URL}/admin/category", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get<Product[]>("http://localhost:5500/admin/product", {
+        axios.get<Product[]>("${import.meta.env.VITE_API_BASE_URL}/admin/product", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -69,7 +69,7 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "http://localhost:5500/admin/addProduct",
+        "${import.meta.env.VITE_API_BASE_URL}/admin/addProduct",
         newProduct,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -87,7 +87,7 @@ export default function CategoryProduct() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`http://localhost:5500/admin/product/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/admin/product/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -13,7 +13,7 @@ function App() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        "http://localhost:5500/auth/restoran"
+        "${import.meta.env.VITE_API_BASE_URL}/auth/restoran"
       );
 
       setRest(categoriesRes.data);

@@ -25,7 +25,7 @@ export default function RestaurantList() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.get<Restaurant[]>(
-        "http://localhost:5500/admin/restourant",
+        "${import.meta.env.VITE_API_BASE_URL}/admin/restourant",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -54,7 +54,7 @@ export default function RestaurantList() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "http://localhost:5500/admin/addRestourant",
+        "${import.meta.env.VITE_API_BASE_URL}/admin/addRestourant",
         newRestaurant,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +73,7 @@ export default function RestaurantList() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`http://localhost:5500/admin/restourant/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/admin/restourant/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
