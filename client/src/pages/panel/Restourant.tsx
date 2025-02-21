@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaTrash, FaPlus } from "react-icons/fa";
+import { FaTrash, FaPlus, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+
 interface Restaurant {
   id: number;
   name: string;
@@ -19,18 +20,19 @@ export default function RestaurantList() {
     address: "",
     image: "",
   });
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editedRestaurant, setEditedRestaurant] = useState<Partial<Restaurant>>({});
   const navigate = useNavigate();
+
   const fetchRestaurants = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-
       const response = await axios.get<Restaurant[]>(
         "https://qrmenu-r239.onrender.com/admin/restourant",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       setRestaurants(response.data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -47,12 +49,10 @@ export default function RestaurantList() {
   };
 
   const addRestaurant = async () => {
-    if (!newRestaurant.name.trim())
-      return alert("Restaurant name is required!");
+    if (!newRestaurant.name.trim()) return alert("Restaurant name is required!");
 
     try {
       const token = localStorage.getItem("accessToken");
-
       const response = await axios.post(
         "https://qrmenu-r239.onrender.com/admin/addRestourant",
         newRestaurant,
@@ -60,10 +60,8 @@ export default function RestaurantList() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response.data);
-
-      setRestaurants([...restaurants, response.data.restaurant]); // Listeye ekle
-      setNewRestaurant({ name: "", address: "", image: "" }); // Formu sıfırla
+      setRestaurants([...restaurants, response.data.restaurant]);
+      setNewRestaurant({ name: "", address: "", image: "" });
     } catch (error) {
       console.error("Error adding restaurant:", error);
     }
@@ -72,16 +70,42 @@ export default function RestaurantList() {
   const deleteRestaurant = async (id: number) => {
     try {
       const token = localStorage.getItem("accessToken");
-
       await axios.delete(`https://qrmenu-r239.onrender.com/admin/restourant/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      setRestaurants((prevRestaurants) =>
-        prevRestaurants.filter((restaurant) => restaurant.id !== id)
-      );
+      setRestaurants((prev) => prev.filter((r) => r.id !== id));
     } catch (error) {
       console.error("Error deleting restaurant:", error);
+    }
+  };
+
+  const startEditing = (restaurant: Restaurant) => {
+    setEditingId(restaurant.id);
+    setEditedRestaurant({ ...restaurant });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditedRestaurant({});
+  };
+
+  const saveRestaurant = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.put(
+        `https://qrmenu-r239.onrender.com/admin/restourant/${id}`,
+        editedRestaurant,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRestaurants((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, ...response.data } : r))
+      );
+      setEditingId(null);
+      setEditedRestaurant({});
+    } catch (error) {
+      console.error("Error updating restaurant:", error);
     }
   };
 
@@ -89,8 +113,8 @@ export default function RestaurantList() {
     fetchRestaurants();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-600"></div>;
-  if (error) return <div className="text-center text-red-500"></div>;
+  if (loading) return <div className="text-center text-gray-600">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
     <div className="container mx-auto p-6">
@@ -153,20 +177,73 @@ export default function RestaurantList() {
             {restaurants.map((restaurant, index) => (
               <tr
                 key={restaurant.id}
-                className={`${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-gray-50"
-                } hover:bg-gray-200`}
+                className={`$${index % 2 === 0 ? "bg-gray-100" : "bg-gray-50"} hover:bg-gray-200`}
               >
                 <td className="py-3 px-6">{restaurant.id}</td>
-                <td className="py-3 px-6 font-semibold">{restaurant.name}</td>
-                <td className="py-3 px-6">{restaurant.address || "N/A"}</td>
+                <td className="py-3 px-6 font-semibold">
+                  {editingId === restaurant.id ? (
+                    <input
+                      value={editedRestaurant.name || ""}
+                      onChange={(e) =>
+                        setEditedRestaurant({
+                          ...editedRestaurant,
+                          name: e.target.value,
+                        })
+                      }
+                      className="border p-1 rounded w-full"
+                    />
+                  ) : (
+                    restaurant.name
+                  )}
+                </td>
+                <td className="py-3 px-6">
+                  {editingId === restaurant.id ? (
+                    <input
+                      value={editedRestaurant.address || ""}
+                      onChange={(e) =>
+                        setEditedRestaurant({
+                          ...editedRestaurant,
+                          address: e.target.value,
+                        })
+                      }
+                      className="border p-1 rounded w-full"
+                    />
+                  ) : (
+                    restaurant.address || "N/A"
+                  )}
+                </td>
                 <td className="py-3 px-6 text-center flex justify-center gap-2">
-                  <button
-                    onClick={() => deleteRestaurant(restaurant.id)}
-                    className="bg-red-500 text-white px-3 py-3 rounded-lg hover:bg-red-600 flex items-center gap-2"
-                  >
-                    <FaTrash />
-                  </button>
+                  {editingId === restaurant.id ? (
+                    <>
+                      <button
+                        onClick={() => saveRestaurant(restaurant.id)}
+                        className="bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
+                      >
+                        <FaCheck />
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        className="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 flex items-center gap-2"
+                      >
+                        <FaTimes />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => startEditing(restaurant)}
+                        className="bg-yellow-500 text-white px-3 py-2 rounded-lg hover:bg-yellow-600 flex items-center gap-2"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => deleteRestaurant(restaurant.id)}
+                        className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 flex items-center gap-2"
+                      >
+                        <FaTrash />
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

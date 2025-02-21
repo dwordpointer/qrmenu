@@ -13,7 +13,7 @@ exports.getRestaurant = async (req, res) => {
 
 exports.addRestaurant = async (req, res) => {
   try {
-    const { name, address, phone,image } = req.body;
+    const { name, address, phone, image } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: "Restaurant name is required" });
@@ -23,7 +23,7 @@ exports.addRestaurant = async (req, res) => {
       name,
       address,
       phone,
-      image
+      image,
     });
 
     res.status(201).json({
@@ -33,6 +33,78 @@ exports.addRestaurant = async (req, res) => {
   } catch (error) {
     console.error("Error adding restaurant:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.updateRestaurant = async (req, res) => {
+  const { id } = req.params;
+  const { name, address, phone, image } = req.body;
+
+  try {
+    const restaurant = await RestaurantModel.findByPk(id);
+    if (!restaurant)
+      return res.status(404).json({ message: "Restaurant not found" });
+
+    restaurant.name = name || restaurant.name;
+    restaurant.address = address || restaurant.address;
+    restaurant.phone = phone || restaurant.phone;
+    restaurant.image = image || restaurant.image;
+
+    await restaurant.save();
+    res
+      .status(200)
+      .json({ message: "Restaurant updated successfully", restaurant });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating restaurant", error: error.message });
+  }
+};
+
+// ✅ Kategori Güncelleme
+exports.updateCategory = async (req, res) => {
+  const { id } = req.params;
+  const { name, image } = req.body;
+
+  try {
+    const category = await CategoryModel.findByPk(id);
+    if (!category)
+      return res.status(404).json({ message: "Category not found" });
+
+    category.name = name || category.name;
+    category.image = image || category.image;
+
+    await category.save();
+    res
+      .status(200)
+      .json({ message: "Category updated successfully", category });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating category", error: error.message });
+  }
+};
+
+// ✅ Ürün Güncelleme
+exports.updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, price, description, image } = req.body;
+
+  try {
+    const product = await ProductModel.findByPk(id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.description = description || product.description;
+    product.image = image || product.image;
+
+    await product.save();
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating product", error: error.message });
   }
 };
 
@@ -64,12 +136,10 @@ exports.deleteRestaurant = async (req, res) => {
     // Restoranı siliyoruz
     await restaurant.destroy();
 
-    return res
-      .status(200)
-      .json({
-        message:
-          "Restaurant and its associated categories and products deleted successfully",
-      });
+    return res.status(200).json({
+      message:
+        "Restaurant and its associated categories and products deleted successfully",
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -79,7 +149,7 @@ exports.deleteRestaurant = async (req, res) => {
 };
 
 exports.addCategory = async (req, res) => {
-  const { name, restaurantId,image } = req.body;
+  const { name, restaurantId, image } = req.body;
 
   try {
     const restaurant = await RestaurantModel.findByPk(restaurantId);
@@ -87,7 +157,7 @@ exports.addCategory = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    const category = await CategoryModel.create({ name, restaurantId,image });
+    const category = await CategoryModel.create({ name, restaurantId, image });
 
     return res.status(201).json({ category });
   } catch (error) {
@@ -122,11 +192,9 @@ exports.deleteCategory = async (req, res) => {
 
     await category.destroy();
 
-    return res
-      .status(200)
-      .json({
-        message: "Category and associated products deleted successfully",
-      });
+    return res.status(200).json({
+      message: "Category and associated products deleted successfully",
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -145,7 +213,7 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
-  const { name, price, description, categoryId,image } = req.body;
+  const { name, price, description, categoryId, image } = req.body;
 
   try {
     const category = await CategoryModel.findByPk(categoryId);
@@ -158,7 +226,7 @@ exports.addProduct = async (req, res) => {
       price,
       description,
       categoryId,
-      image
+      image,
     });
 
     return res.status(201).json({ product });

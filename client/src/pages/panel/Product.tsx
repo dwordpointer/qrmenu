@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaTrash, FaPlus } from "react-icons/fa";
+import { FaTrash, FaPlus, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 interface Category {
@@ -12,9 +12,9 @@ interface Product {
   id: number;
   name: string;
   categoryId: number;
-  price:number;
-  description:string;
-  image:string;
+  price: number;
+  description: string;
+  image: string;
 }
 
 export default function CategoryProduct() {
@@ -27,8 +27,10 @@ export default function CategoryProduct() {
     price: 0,
     description: "",
     categoryId: 0,
-    image:""
+    image: "",
   });
+  const [editProductId, setEditProductId] = useState<number | null>(null);
+  const [editedProduct, setEditedProduct] = useState<Partial<Product>>({});
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -77,7 +79,7 @@ export default function CategoryProduct() {
       );
 
       setProducts([...products, response.data.product]);
-      setNewProduct({ name: "", price: 0, description: "", categoryId: 0,image:"" });
+      setNewProduct({ name: "", price: 0, description: "", categoryId: 0, image: "" });
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -91,11 +93,40 @@ export default function CategoryProduct() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== id)
-      );
+      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
     } catch (error) {
       console.error("Error deleting product:", error);
+    }
+  };
+
+  const startEditProduct = (product: Product) => {
+    setEditProductId(product.id);
+    setEditedProduct(product);
+  };
+
+  const cancelEditProduct = () => {
+    setEditProductId(null);
+    setEditedProduct({});
+  };
+
+  const saveEditedProduct = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.put(
+        `https://qrmenu-r239.onrender.com/admin/product/${id}`,
+        editedProduct,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setProducts((prevProducts) =>
+        prevProducts.map((product) => (product.id === id ? response.data.product : product))
+      );
+      setEditProductId(null);
+      setEditedProduct({});
+    } catch (error) {
+      console.error("Error updating product:", error);
     }
   };
 
@@ -103,10 +134,8 @@ export default function CategoryProduct() {
     fetchData();
   }, []);
 
-  if (loading)
-    return <div className="text-center text-gray-600"></div>;
-  if (error)
-    return <div className="text-center text-red-500"></div>;
+  if (loading) return <div className="text-center text-gray-600"></div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
     <div className="container mx-auto p-6">
@@ -121,46 +150,36 @@ export default function CategoryProduct() {
             type="text"
             placeholder="Product Name"
             value={newProduct.name}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, name: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
             className="border p-2 rounded w-1/2"
           />
           <input
             type="text"
             placeholder="Image Link"
             value={newProduct.image}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, image: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
             className="border p-2 rounded w-1/2"
           />
           <input
             type="number"
             placeholder="Product Price"
             value={newProduct.price}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                price: parseFloat(e.target.value) || 0,
-              })
-            }
+            onChange={(e) => setNewProduct({
+              ...newProduct,
+              price: parseFloat(e.target.value) || 0,
+            })}
             className="border p-2 rounded w-1/2"
           />
           <input
             type="text"
             placeholder="Product Description"
             value={newProduct.description}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, description: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
             className="border p-2 rounded w-1/2"
           />
           <select
             value={newProduct.categoryId}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, categoryId: +e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, categoryId: +e.target.value })}
             className="border p-2 rounded w-1/2"
           >
             <option value={0}>Select Category</option>
@@ -199,27 +218,86 @@ export default function CategoryProduct() {
                 {products
                   .filter((product) => product.categoryId === category.id)
                   .map((product) => (
-                    <tr
-                      key={product.id}
-                      className="bg-gray-100 hover:bg-gray-200"
-                    >
+                    <tr key={product.id} className="bg-gray-100 hover:bg-gray-200">
                       <td className="py-3 px-6">{product.id}</td>
                       <td className="py-3 px-6 font-semibold">
-                        {product.name}
+                        {editProductId === product.id ? (
+                          <input
+                            value={editedProduct.name || ""}
+                            onChange={(e) =>
+                              setEditedProduct({ ...editedProduct, name: e.target.value })
+                            }
+                            className="border p-1 rounded w-full"
+                          />
+                        ) : (
+                          product.name
+                        )}
                       </td>
                       <td className="py-3 px-6 font-semibold">
-                        {product.price}
+                        {editProductId === product.id ? (
+                          <input
+                            type="number"
+                            value={editedProduct.price?.toString() || ""}
+                            onChange={(e) =>
+                              setEditedProduct({
+                                ...editedProduct,
+                                price: parseFloat(e.target.value) || 0,
+                              })
+                            }
+                            className="border p-1 rounded w-full"
+                          />
+                        ) : (
+                          product.price
+                        )}
                       </td>
                       <td className="py-3 px-6 font-semibold">
-                        {product.description}
+                        {editProductId === product.id ? (
+                          <input
+                            value={editedProduct.description || ""}
+                            onChange={(e) =>
+                              setEditedProduct({
+                                ...editedProduct,
+                                description: e.target.value,
+                              })
+                            }
+                            className="border p-1 rounded w-full"
+                          />
+                        ) : (
+                          product.description
+                        )}
                       </td>
-                      <td className="py-3 px-6 text-center">
-                        <button
-                          onClick={() => deleteProduct(product.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                        >
-                          <FaTrash />
-                        </button>
+                      <td className="py-3 px-6 text-center flex gap-2 justify-center">
+                        {editProductId === product.id ? (
+                          <>
+                            <button
+                              onClick={() => saveEditedProduct(product.id)}
+                              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                            >
+                              <FaSave />
+                            </button>
+                            <button
+                              onClick={cancelEditProduct}
+                              className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-500"
+                            >
+                              <FaTimes />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEditProduct(product)}
+                              className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => deleteProduct(product.id)}
+                              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}
