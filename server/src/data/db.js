@@ -8,7 +8,7 @@ const sequelize = new Sequelize('defaultdb', 'avnadmin', 'AVNS_G-7wNAlU8PDN1VhGl
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: true,
+        rejectUnauthorized: false,
       },
     },
     define: {
