@@ -13,7 +13,7 @@ function App() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        "https://qrmenu-server.vercel.app//auth/restoran"
+        "https://qrmenu-r239.onrender.com/auth/restoran"
       );
 
       setRest(categoriesRes.data);

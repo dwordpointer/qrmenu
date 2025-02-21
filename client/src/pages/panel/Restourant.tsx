@@ -25,7 +25,7 @@ export default function RestaurantList() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.get<Restaurant[]>(
-        "https://qrmenu-server.vercel.app//admin/restourant",
+        "https://qrmenu-r239.onrender.com/admin/restourant",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -54,7 +54,7 @@ export default function RestaurantList() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "https://qrmenu-server.vercel.app//admin/addRestourant",
+        "https://qrmenu-r239.onrender.com/admin/addRestourant",
         newRestaurant,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +73,7 @@ export default function RestaurantList() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`https://qrmenu-server.vercel.app//admin/restourant/${id}`, {
+      await axios.delete(`https://qrmenu-r239.onrender.com/admin/restourant/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

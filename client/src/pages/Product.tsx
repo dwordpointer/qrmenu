@@ -15,7 +15,7 @@ function Product() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        `https://qrmenu-server.vercel.app//auth/product/${prodid}`
+        `https://qrmenu-r239.onrender.com/auth/product/${prodid}`
       );
 
       setRest(categoriesRes.data);

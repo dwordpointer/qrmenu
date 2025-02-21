@@ -29,7 +29,7 @@ const Login = () => {
     setError(null);
 
     try {
-        const response = await axios.post("https://qrmenu-server.vercel.app//auth/login", formData);
+        const response = await axios.post("https://qrmenu-r239.onrender.com/auth/login", formData);
         
         if (response.data.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);

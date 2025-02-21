@@ -30,10 +30,10 @@ export default function Category() {
       const token = localStorage.getItem("accessToken");
 
       const [restaurantsRes, categoriesRes] = await Promise.all([
-        axios.get<Restaurant[]>("https://qrmenu-server.vercel.app//admin/restourant", {
+        axios.get<Restaurant[]>("https://qrmenu-r239.onrender.com/admin/restourant", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get<Category[]>("https://qrmenu-server.vercel.app//admin/category", {
+        axios.get<Category[]>("https://qrmenu-r239.onrender.com/admin/category", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -63,7 +63,7 @@ export default function Category() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "https://qrmenu-server.vercel.app//admin/addCategory",
+        "https://qrmenu-r239.onrender.com/admin/addCategory",
         newCategory,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -82,7 +82,7 @@ export default function Category() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`https://qrmenu-server.vercel.app//admin/category/${id}`, {
+      await axios.delete(`https://qrmenu-r239.onrender.com/admin/category/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
