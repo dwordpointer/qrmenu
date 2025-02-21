@@ -17,10 +17,10 @@ app.use("/auth", userRouter);
 const adminRouter = require("./src/routers/adminRouter");
 app.use("/admin", adminRouter);
 
-// async function connseq (){
-//     await sequelize.sync({ force: true });
-//     await dummyData();
-// }connseq();
+async function connseq (){
+    await sequelize.sync({ force: true });
+    await dummyData();
+}connseq();
 
 
 const PORT = process.env.PORT || 5000
