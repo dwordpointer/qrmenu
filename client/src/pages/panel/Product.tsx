@@ -134,7 +134,7 @@ export default function CategoryProduct() {
     fetchData();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-600"></div>;
+  if (loading) return <div className="text-center text-gray-600">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
@@ -145,42 +145,44 @@ export default function CategoryProduct() {
 
       <div className="bg-gray-100 p-4 mb-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-3">Add New Product</h2>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <input
             type="text"
             placeholder="Product Name"
             value={newProduct.name}
             onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-            className="border p-2 rounded w-1/2"
+            className="border p-2 rounded"
           />
           <input
             type="text"
             placeholder="Image Link"
             value={newProduct.image}
             onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-            className="border p-2 rounded w-1/2"
+            className="border p-2 rounded"
           />
           <input
             type="number"
             placeholder="Product Price"
             value={newProduct.price}
-            onChange={(e) => setNewProduct({
-              ...newProduct,
-              price: parseFloat(e.target.value) || 0,
-            })}
-            className="border p-2 rounded w-1/2"
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                price: parseFloat(e.target.value) || 0,
+              })
+            }
+            className="border p-2 rounded"
           />
           <input
             type="text"
             placeholder="Product Description"
             value={newProduct.description}
             onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-            className="border p-2 rounded w-1/2"
+            className="border p-2 rounded"
           />
           <select
             value={newProduct.categoryId}
             onChange={(e) => setNewProduct({ ...newProduct, categoryId: +e.target.value })}
-            className="border p-2 rounded w-1/2"
+            className="border p-2 rounded"
           >
             <option value={0}>Select Category</option>
             {categories.map((category) => (
@@ -192,7 +194,7 @@ export default function CategoryProduct() {
 
           <button
             onClick={addProduct}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2 justify-center"
           >
             <FaPlus /> Add Product
           </button>
@@ -209,6 +211,7 @@ export default function CategoryProduct() {
                 <tr>
                   <th className="py-3 px-6 text-left">Product ID</th>
                   <th className="py-3 px-6 text-left">Product Name</th>
+                  <th className="py-3 px-6 text-left">Image</th>
                   <th className="py-3 px-6 text-left">Product Price</th>
                   <th className="py-3 px-6 text-left">Product Desc</th>
                   <th className="py-3 px-6 text-center">Actions</th>
@@ -219,6 +222,24 @@ export default function CategoryProduct() {
                   .filter((product) => product.categoryId === category.id)
                   .map((product) => (
                     <tr key={product.id} className="bg-gray-100 hover:bg-gray-200">
+                      <td className="py-3 px-6">
+                        {editProductId === product.id ? (
+                          <input
+                            type="text"
+                            value={editedProduct.image || ""}
+                            onChange={(e) =>
+                              setEditedProduct({ ...editedProduct, image: e.target.value })
+                            }
+                            className="border p-1 rounded w-full"
+                          />
+                        ) : (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        )}
+                      </td>
                       <td className="py-3 px-6">{product.id}</td>
                       <td className="py-3 px-6 font-semibold">
                         {editProductId === product.id ? (
@@ -247,7 +268,7 @@ export default function CategoryProduct() {
                             className="border p-1 rounded w-full"
                           />
                         ) : (
-                          product.price
+                          `$${product.price}`
                         )}
                       </td>
                       <td className="py-3 px-6 font-semibold">
