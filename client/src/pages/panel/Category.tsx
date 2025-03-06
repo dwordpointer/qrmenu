@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaTrash, FaPlus, FaEdit, FaSave, FaTimes, FaCross } from "react-icons/fa";
+import { FaTrash, FaPlus, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 interface Restaurant {

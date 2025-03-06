@@ -113,7 +113,7 @@ export default function CategoryProduct() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_API_CLIENT_URL}/admin/productEnable/${id}`,
         { enable: true },
         {
@@ -128,7 +128,7 @@ export default function CategoryProduct() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_API_CLIENT_URL}/admin/productEnable/${id}`,
         { enable: false },
         {
