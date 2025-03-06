@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/user-context";
 
 interface LoginFormData {
   email: string;
@@ -8,13 +9,14 @@ interface LoginFormData {
 }
 
 const Login = () => {
+  const { setLevel, setName } = useContext(UserContext);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,13 +31,23 @@ const Login = () => {
     setError(null);
 
     try {
-        const response = await axios.post("https://qrmenu-r239.onrender.com/auth/login", formData);
-        
-        if (response.data.accessToken) {
-          localStorage.setItem("accessToken", response.data.accessToken);
-        }
-  
-        navigate("/admin")
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_CLIENT_URL}/auth/login`,
+        formData
+      );
+
+      setLevel(response.data.level)
+      setName(response.data.name)
+      
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      console.log(response.data.level);
+      if(response.data.level === "3"){
+        navigate("/kasa");
+      }else{
+        navigate("/admin");
+      }
     } catch (err: any) {
       setError("Giriş başarısız! Lütfen bilgilerinizi kontrol edin.");
     }
@@ -48,7 +60,10 @@ const Login = () => {
         {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-600"
+            >
               E-posta
             </label>
             <input
@@ -62,7 +77,10 @@ const Login = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-600"
+            >
               Şifre
             </label>
             <input

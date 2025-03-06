@@ -38,10 +38,10 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const [categoriesRes, productsRes] = await Promise.all([
-        axios.get<Category[]>("https://qrmenu-r239.onrender.com/admin/category", {
+        axios.get<Category[]>(`${import.meta.env.VITE_API_CLIENT_URL}/admin/category`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get<Product[]>("https://qrmenu-r239.onrender.com/admin/product", {
+        axios.get<Product[]>(`${import.meta.env.VITE_API_CLIENT_URL}/admin/product`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -71,7 +71,7 @@ export default function CategoryProduct() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "https://qrmenu-r239.onrender.com/admin/addProduct",
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/addProduct`,
         newProduct,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -89,7 +89,7 @@ export default function CategoryProduct() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`https://qrmenu-r239.onrender.com/admin/product/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_CLIENT_URL}/admin/product/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -109,11 +109,43 @@ export default function CategoryProduct() {
     setEditedProduct({});
   };
 
+  const toggleCategoryEnable = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/productEnable/${id}`,
+        { enable: true },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (error) {
+      console.error("Error updating category enable state:", error);
+    }
+  };
+  const toggleCategoryDisable = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/productEnable/${id}`,
+        { enable: false },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+    } catch (error) {
+      console.error("Error updating category enable state:", error);
+    }
+  };
+
   const saveEditedProduct = async (id: number) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.put(
-        `https://qrmenu-r239.onrender.com/admin/product/${id}`,
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/product/${id}`,
         editedProduct,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -138,7 +170,7 @@ export default function CategoryProduct() {
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 h-full overflow-y-auto">
       <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">
         Product Management by Category
       </h1>
@@ -209,11 +241,12 @@ export default function CategoryProduct() {
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead className="bg-blue-600 text-white">
                 <tr>
+                  <th className="py-3 px-6 text-left">Image</th>
                   <th className="py-3 px-6 text-left">Product ID</th>
                   <th className="py-3 px-6 text-left">Product Name</th>
-                  <th className="py-3 px-6 text-left">Image</th>
                   <th className="py-3 px-6 text-left">Product Price</th>
                   <th className="py-3 px-6 text-left">Product Desc</th>
+                  <th className="py-3 px-6 text-center">Enabled</th>
                   <th className="py-3 px-6 text-center">Actions</th>
                 </tr>
               </thead>
@@ -268,7 +301,7 @@ export default function CategoryProduct() {
                             className="border p-1 rounded w-full"
                           />
                         ) : (
-                          `$${product.price}`
+                          `${product.price} ₺` 
                         )}
                       </td>
                       <td className="py-3 px-6 font-semibold">
@@ -287,7 +320,23 @@ export default function CategoryProduct() {
                           product.description
                         )}
                       </td>
-                      <td className="py-3 px-6 text-center flex gap-2 justify-center">
+                      <td className="py-3 px-6 text-center">
+                        <div className="flex gap-3 justify-center ">
+                          <button
+                            onClick={() => toggleCategoryEnable(product.id)}
+                            className="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600"
+                          >
+                            <FaSave />
+                          </button>
+                          <button
+                            onClick={() => toggleCategoryDisable(product.id)}
+                            className="bg-red-500 text-white p-3 rounded-lg hover:bg-green-600"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-3 px-6 text-center flex gap-2 justify-center ">
                         {editProductId === product.id ? (
                           <>
                             <button
@@ -307,13 +356,13 @@ export default function CategoryProduct() {
                           <>
                             <button
                               onClick={() => startEditProduct(product)}
-                              className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600"
+                              className="bg-yellow-500 text-white p-3 rounded-lg hover:bg-yellow-600"
                             >
                               <FaEdit />
                             </button>
                             <button
                               onClick={() => deleteProduct(product.id)}
-                              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                              className="bg-red-500 text-white p-3 rounded-lg hover:bg-red-600"
                             >
                               <FaTrash />
                             </button>

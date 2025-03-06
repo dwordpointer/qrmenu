@@ -13,7 +13,7 @@ function App() {
   const fetchData = async () => {
     try {
       const categoriesRes = await axios.get(
-        "https://qrmenu-r239.onrender.com/auth/restoran"
+        `${import.meta.env.VITE_API_CLIENT_URL}/auth/restoran`
       );
 
       setRest(categoriesRes.data);
@@ -45,7 +45,7 @@ function App() {
       <div className="mt-5 w-full max-w-2xl px-5">
         {rest.length > 0 ? (
           rest.map((item) => (
-            <div
+            item.enable ? (<div
               key={item.id}
               className="bg-gray-800 rounded-2xl shadow-md p-5 mb-4 hover:bg-gray-700 transition-all cursor-pointer flex items-center"
               onClick={() => {
@@ -65,8 +65,8 @@ function App() {
                   Adres: {item.address || "Adres bilgisi yok"}
                 </p>
               </div>
-            </div>
-          ))
+            </div>): ""
+          )) 
         ) : (
           <div className="text-center text-gray-400">
             Hiç restoran bulunamadı.

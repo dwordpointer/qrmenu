@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../data/db");
+import { DataTypes } from "sequelize";
+import sequelize from "../data/db.js";
 
 const Category = sequelize.define(
   "categories",
@@ -12,20 +12,25 @@ const Category = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    image:{
+    image: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     restaurantId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'restaurants',  
-          key: 'id',             
-        },
-        allowNull: false,
-      }
+      type: DataTypes.INTEGER,
+      references: {
+        model: "restaurants",
+        key: "id",
+      },
+      allowNull: false,
+    },
+    enable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = Category;
+export default Category;

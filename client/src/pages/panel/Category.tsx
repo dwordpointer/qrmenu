@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaTrash, FaPlus, FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import { FaTrash, FaPlus, FaEdit, FaSave, FaTimes, FaCross } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 interface Restaurant {
@@ -16,6 +16,7 @@ interface Category {
   name: string;
   image?: string;
   restaurantId: number;
+  enable: boolean;
 }
 
 export default function Category() {
@@ -37,12 +38,18 @@ export default function Category() {
       const token = localStorage.getItem("accessToken");
 
       const [restaurantsRes, categoriesRes] = await Promise.all([
-        axios.get<Restaurant[]>("https://qrmenu-r239.onrender.com/admin/restourant", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get<Category[]>("https://qrmenu-r239.onrender.com/admin/category", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        axios.get<Restaurant[]>(
+          `${import.meta.env.VITE_API_CLIENT_URL}/admin/restourant`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        ),
+        axios.get<Category[]>(
+          `${import.meta.env.VITE_API_CLIENT_URL}/admin/category`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        ),
       ]);
 
       setRestaurants(restaurantsRes.data);
@@ -70,7 +77,7 @@ export default function Category() {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.post(
-        "https://qrmenu-r239.onrender.com/admin/addCategory",
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/addCategory`,
         newCategory,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -88,9 +95,12 @@ export default function Category() {
     try {
       const token = localStorage.getItem("accessToken");
 
-      await axios.delete(`https://qrmenu-r239.onrender.com/admin/category/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/category/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setCategories((prevCategories) =>
         prevCategories.filter((category) => category.id !== id)
@@ -116,7 +126,7 @@ export default function Category() {
       const updatedCategory = { ...editedCategory };
 
       const response = await axios.put(
-        `https://qrmenu-r239.onrender.com/admin/category/${id}`,
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/category/${id}`,
         updatedCategory,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -132,15 +142,64 @@ export default function Category() {
     }
   };
 
+  const toggleCategoryEnable = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/categoryEnable/${id}`,
+        { enable: true },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category.id === id
+            ? { ...category, enable: response.data.enabled }
+            : category
+        )
+      );
+    } catch (error) {
+      console.error("Error updating category enable state:", error);
+    }
+  };
+  const toggleCategoryDisable = async (id: number) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_CLIENT_URL}/admin/categoryEnable/${id}`,
+        { enable: false },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category.id === id
+            ? { ...category, enable: response.data.enabled }
+            : category
+        )
+      );
+    } catch (error) {
+      console.error("Error updating category enable state:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-600 mt-5">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 mt-5">{error}</div>;
+  if (loading)
+    return <div className="text-center text-gray-600 mt-5">Loading...</div>;
+  if (error)
+    return <div className="text-center text-red-500 mt-5">{error}</div>;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 h-full overflow-y-auto">
       <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">
         Category Management
       </h1>
@@ -201,6 +260,7 @@ export default function Category() {
                   <th className="py-3 px-6 text-left">Category ID</th>
                   <th className="py-3 px-6 text-left">Category Name</th>
                   <th className="py-3 px-6 text-left">Image Link</th>
+                  <th className="py-3 px-6 text-center">Enabled</th>
                   <th className="py-3 px-6 text-center">Actions</th>
                 </tr>
               </thead>
@@ -246,6 +306,22 @@ export default function Category() {
                         ) : (
                           category.image || "-"
                         )}
+                      </td>
+                      <td className="py-3 px-6 text-center">
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => toggleCategoryEnable(category.id)}
+                            className="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600"
+                          >
+                            <FaSave />
+                          </button>
+                          <button
+                            onClick={() => toggleCategoryDisable(category.id)}
+                            className="bg-red-500 text-white p-3 rounded-lg hover:bg-green-600"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
                       </td>
                       <td className="py-3 px-6 text-center flex justify-center gap-2">
                         {editCategoryId === category.id ? (

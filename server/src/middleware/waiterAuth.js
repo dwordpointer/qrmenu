@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const verify = (req, res, next) => {
+const WaiterVerify = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(' ')[1];
@@ -11,8 +11,8 @@ const verify = (req, res, next) => {
         });
       }
       req.user = user;
-
-      if (Number(user.level) === 2) {
+      req.name = user.name || user.userName;
+      if (Number(user.level) === 1) {
         return next();
       }
       return res.status(401).json({ message: 'Yetkisiz giriş denemesi.' });
@@ -22,4 +22,4 @@ const verify = (req, res, next) => {
   }
 };
 
-export default verify;
+export default WaiterVerify;

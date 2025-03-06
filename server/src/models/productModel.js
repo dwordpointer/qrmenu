@@ -1,5 +1,6 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../data/db");
+import { DataTypes } from "sequelize";
+import sequelize from "../data/db.js";
+import Category from "./categoryModel.js";
 
 const Product = sequelize.define(
   "products",
@@ -23,13 +24,28 @@ const Product = sequelize.define(
     categoryId: {
       type: DataTypes.INTEGER,
       references: {
-        model: "categories", // `categories` modeline referans
-        key: "id", // `categories` modelinin `id` sütununa
+        model: "categories",
+        key: "id",
       },
       allowNull: false,
+    },
+    enable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = Product;
+Category.hasMany(Product, {
+  foreignKey: "categoryId",
+  as: "products",
+});
+
+Product.belongsTo(Category, {
+  foreignKey: "categoryId",
+  as: "category",
+});
+
+export default Product;

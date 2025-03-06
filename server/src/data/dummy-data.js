@@ -1,23 +1,33 @@
-const User = require("../models/userModel");
-const Restaurant = require("../models/restaurantModel");
-const Category = require("../models/categoryModel");
-const Product = require("../models/productModel");
-const bcrypt = require("bcrypt");
+import User from '../models/userModel.js';
+import Restaurant from '../models/restaurantModel.js';
+import Category from '../models/categoryModel.js';
+import Product from '../models/productModel.js';
+import Table from '../models/tablesModel.js';
+import bcrypt from 'bcrypt';
 
-module.exports = async () => {
+const addDummyData = async () => {
   try {
-    // Kullanıcı ekleme
     await User.bulkCreate([
       {
-        name: "Hasan",
-        surname: "ACAR",
-        eMail: "hasanacar@hotmail.com",
-        password: await bcrypt.hash("102030++", 10),
+        name: 'Hasan',
+        surname: 'ACAR',
+        email: 'hasanacar@hotmail.com',
+        password: await bcrypt.hash('102030++', 10),
+        level: 2,
+      },
+      {
+        name: 'Kasa',
+        surname: 'Kasa',
+        email: 'kasa@hotmail.com',
+        password: await bcrypt.hash('102030++', 10),
+        level: 3,
       },
     ]);
 
-    console.log("Dummy data başarıyla eklendi.");
+    console.log('Dummy data başarıyla eklendi.');
   } catch (error) {
-    console.error("Dummy data eklerken hata oluştu:", error);
+    console.error('Dummy data eklerken hata oluştu:', error);
   }
 };
+
+export default addDummyData;

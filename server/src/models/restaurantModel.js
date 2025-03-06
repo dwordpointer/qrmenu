@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../data/db");
+import { DataTypes } from "sequelize";
+import sequelize from "../data/db.js";
 
 const Restaurant = sequelize.define(
   "restaurants",
@@ -25,8 +25,13 @@ const Restaurant = sequelize.define(
       allowNull: true,
       unique: true,
     },
+    enable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = Restaurant;
+export default Restaurant;

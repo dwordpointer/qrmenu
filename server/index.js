@@ -1,30 +1,35 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const dotenv = require('dotenv')
-const cors = require('cors')
+import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import cors from "cors";
 
-app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 dotenv.config();
 
-const sequelize = require("./src/data/db")
-const dummyData = require("./src/data/dummy-data")
+import sequelize from "./src/data/db.js";
+import dummyData from "./src/data/dummy-data.js";
 
-const userRouter = require("./src/routers/userRouter");
+import userRouter from "./src/routers/userRouter.js";
 app.use("/auth", userRouter);
-const adminRouter = require("./src/routers/adminRouter");
+import adminRouter from "./src/routers/adminRouter.js";
 app.use("/admin", adminRouter);
+import waiterRouter from "./src/routers/waiterRouter.js";
+app.use("/waiter", waiterRouter);
+import cashRegisterRouter from "./src/routers/cashRegisterRouter.js";
+app.use("/cashRegister", cashRegisterRouter);
 
-// async function connseq (){
-//     await sequelize.sync({ force: true });
-//     await dummyData();
-// }connseq();
+// async function connseq() {
+//   await sequelize.sync({ alter: true });
+//   await dummyData();
+// }
+// connseq();
 
-
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log("PORT   ->   ", PORT)
-})
+  console.log("PORT   ->   ", PORT);
+});
