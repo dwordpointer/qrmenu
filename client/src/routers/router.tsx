@@ -17,14 +17,14 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="*" element={<NotFound />} />
+        {/* <Route path="*" element={<NotFound />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/category/:catid" element={<Category />} />
         <Route path="/orders/:tableid/:tablename" element={<Orders />} />
         <Route path="/product/:catid/:prodid" element={<Product />} />
         <Route path="/kasa" element={<Index />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} /> */}
       </Routes>
     </Router>
   );
